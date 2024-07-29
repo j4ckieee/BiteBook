@@ -17,11 +17,10 @@ while True:
                 temp_list = []
 
         print("Adding recipe into catalog...")
+        time.sleep(1)
         with open('catalog.txt', 'w') as file:
             temp_list.append(new_recipe)
             json.dump(temp_list, file, indent=4)
         print("Success!")
 
     add_file.close()
-
-
