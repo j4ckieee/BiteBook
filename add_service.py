@@ -17,7 +17,7 @@ def add_recipe():
             with open('catalog.txt', 'r') as cat_file:
                 try:
                     temp_list = json.load(cat_file)
-                except json.JSONDecodeError:
+                except:
                     temp_list = []
         else:
             temp_list = []
@@ -31,7 +31,6 @@ def add_recipe():
 
         # Clear add file
         os.remove('add.txt')
-
         print("Recipe added to catalog successfully!\n")
 
 while True:

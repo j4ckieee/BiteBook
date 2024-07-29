@@ -1,0 +1,18 @@
++-----------------------------------------------------------+
+| Peanut Butter and Jelly                                   |
++-----------------------------------------------------------+
+| Description:                                              |
+| A delightful sandwich                                     |
+|                                                           |
+| Ingredients:                                              |
+|  - 2 slices of bread                                      |
+|  - 1 tbsp peanut butter                                   |
+|  - 1 tbsp jelly                                           |
+|                                                           |
+| Instructions:                                             |
+|  Use a knife to spread peanut butter on a slice of bread. |
+|  Then, use the knife to spead jelly on the other slice.   |
+|  Squish the slices together.                              |
+|  Enjoy.                                                   |
+|                                                           |
++-----------------------------------------------------------+
