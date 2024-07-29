@@ -1,0 +1,14 @@
+[
+    {
+        "recipe_name": "Cacio e Pepe",
+        "description": "Classic Italian pasta dish from Rome.",
+        "ingredients": "200 grams spaghetti, 25 grams butter, 1 tsp black pepper, 50 grams pecorino",
+        "instructions": "To prepare the dish, start by boiling a large stockpot of water (about 3 quarts) and seasoning it with 2 tablespoons of fine sea salt. While the water heats, melt butter in a large saut\u00e9 pan over medium heat and cook the pepper for 30 seconds before turning off the heat. Once the water is boiling, add the pasta and cook until just barely al dente. Using tongs, transfer the pasta directly to the saut\u00e9 pan with butter and pepper, adding 1/3 cup of starchy pasta water. Toss the pasta, gradually adding cheese and more pasta water as needed to create a smooth, glossy sauce. Serve immediately, garnished with extra black pepper and Pecorino if desired."
+    },
+    {
+        "recipe_name": "Peanut Butter and Jelly",
+        "description": "A delightful sandwich",
+        "ingredients": "2 slices of bread, 1 tbsp peanut butter, 1 tbsp jelly",
+        "instructions": "Use a knife to spread peanut butter on a slice of bread. Then, use the knife to spead jelly on the other slice. Squish the slices together. Enjoy."
+    }
+]
