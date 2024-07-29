@@ -4,22 +4,21 @@ import json
 import pyfiglet
 from prettytable import PrettyTable
 
-print(pyfiglet.figlet_format("B i t e  B o o k", font="script").rstrip())
-
 print("-------------------------------------------------------")
-print("        Hello, welcome to your recipe catalog!")
+print(pyfiglet.figlet_format("B i t e  B o o k", font="script").rstrip())
+print("            Welcome to your recipe catalog!")
 print("-------------------------------------------------------")
 
 while True:
-    print("\nOptions:")
+    print("\nWhat would you like to do?")
     print("1: View all recipes")
-    print("2: Add a new recipe")
+    print("2: Add a recipe")
     print("3: Delete a recipe [not implemented yet] ")
     print("4: Search for a recipe [not implemented yet]")
-    print("5: Help")
+    print("5: I need help!")
     print("6: Exit \n")
 
-    user_input = input("-- What would you like to do?: ")
+    user_input = input("-- Enter your selection here: ")
 
     # view catalog
     if user_input == "1":
@@ -27,14 +26,18 @@ while True:
             try:
                 with open('catalog.txt', 'r') as file:
                     print("\n-------------------------------------------------------")
-                    print("                 View Recipe Catalog")
+                    print("                 View All Recipes")
                     print("-------------------------------------------------------")
+                    time.sleep(1)
+                    print("Here is your recipe catalog:")
+                    time.sleep(1)
                     catalog_table = PrettyTable()
                     catalog_table.field_names = ["", "Recipe Name"]
                     recipe_data = json.load(file)
                     for count, recipe in enumerate(recipe_data, start=1):
                         catalog_table.add_row([count, recipe["recipe_name"]])
                     print(catalog_table)
+                    time.sleep(1)
             except:
                 print("Sorry, nothing in catalog. Please add a new recipe before proceeding.\n")
         else:
@@ -43,9 +46,9 @@ while True:
 
     # add recipe
     elif user_input == "2":
-        print("\n---------------")
-        print("Add Recipe:")
-        print("---------------")
+        print("\n-------------------------------------------------------")
+        print("                   Add a Recipe")
+        print("-------------------------------------------------------")
         print("To add a recipe, please out the following form:")
 
         # Input new recipe
@@ -62,7 +65,7 @@ while True:
 
         time.sleep(1)
         print("\nPlease wait until the recipe has been added into the catalog...")
-        for x in range(3):
+        for x in range(4):
             time.sleep(1)
             print(".")
 
