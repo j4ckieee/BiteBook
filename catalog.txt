@@ -1,14 +1,26 @@
 [
     {
-        "recipe_name": "Cacio e Pepe",
-        "description": "Classic Italian pasta dish from Rome.",
-        "ingredients": "200 grams spaghetti, 25 grams butter, 1 tsp black pepper, 50 grams pecorino",
-        "instructions": "To prepare the dish, start by boiling a large stockpot of water (about 3 quarts) and seasoning it with 2 tablespoons of fine sea salt. While the water heats, melt butter in a large saut\u00e9 pan over medium heat and cook the pepper for 30 seconds before turning off the heat. Once the water is boiling, add the pasta and cook until just barely al dente. Using tongs, transfer the pasta directly to the saut\u00e9 pan with butter and pepper, adding 1/3 cup of starchy pasta water. Toss the pasta, gradually adding cheese and more pasta water as needed to create a smooth, glossy sauce. Serve immediately, garnished with extra black pepper and Pecorino if desired."
+        "recipe_name": "Crunchy Chickpeas",
+        "description": "Crunchy, savory, and easy to eat as a snack.",
+        "ingredients": "1 can chickpeas, 1 tbsp olive oil, 1/8 teaspoon fine salt, any optional seasonings ",
+        "instructions": "Drain the chickpeas and lightly dry with a paper towel. Add the oil, salt, and optional seasonings to the chickpeas. Airfry for 15 mins at 400 degrees F."
+    },
+    {
+        "recipe_name": "Sugar Cookies",
+        "description": "Sweet, buttery, and delicious cookie!",
+        "ingredients": "1 cup unsalted butter, 2/3 cups of sugar, 1 cup of all-purpose flour, 1 tsp of vanilla, sprinkles",
+        "instructions": "Preheat oven to 325 degrees F. Using a mixer, beat together the butter and sugar until combined. Add in flour and vanilla, then blend well. Roll dough into 1-inch balls and place on parchment-lined baking sheet. Flatten cookies. Bake for 14-16 minutes. Let cool, then enjoy."
     },
     {
         "recipe_name": "Peanut Butter and Jelly",
-        "description": "A delightful sandwich",
+        "description": "A simple, childhood classic.",
         "ingredients": "2 slices of bread, 1 tbsp peanut butter, 1 tbsp jelly",
         "instructions": "Use a knife to spread peanut butter on a slice of bread. Then, use the knife to spead jelly on the other slice. Squish the slices together. Enjoy."
+    },
+    {
+        "recipe_name": "Artisan Bread",
+        "description": "Crusty, chewy, no-knead bread.",
+        "ingredients": "3 and 1/4 cups bread flour, 2 tsp instant yeast, 2 tsp course salt, 1 and 1/2 cups water",
+        "instructions": "In a mixing bowl, whisk the flour, yeast, and salt together. Pour in the water and gently mix until the flour is moistened. In the bowl, shape dough into a ball. Cover dough tightly with saran wrap. Set on counter at room temp for about 2-3 hours. Lightly dust baking sheet with flour. Cut the dough in half, shape into long loaves, and place on sheet. Bake in preheated oven at 475 degrees F for 20-25 mins."
     }
 ]

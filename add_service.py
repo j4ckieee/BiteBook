@@ -35,4 +35,4 @@ def add_recipe():
 
 while True:
     add_recipe()
-    time.sleep(5)
+    time.sleep(4)

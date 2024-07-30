@@ -8,8 +8,7 @@ while True:
 
     if txt == "Run":
         print("'Run' received...")
-        time.sleep(1)
-
+        time.sleep(2)
         with open('catalog.txt', 'r') as file:
             catalog_table = PrettyTable()
             catalog_table.field_names = ["", "Recipe Name", "Description"]
@@ -17,9 +16,11 @@ while True:
             for count, recipe in enumerate(recipe_data, start=1):
                 catalog_table.add_row([count, recipe["recipe_name"], recipe["description"]])
             print("Catalog accessed...")
+
         with open('view_catalog.txt', 'w') as file:
             file.write(catalog_table.get_string())
             print("Catalog submitted...")
+            time.sleep(1)
         # except:
         #     print("Catalog NOT accessed...")
         #     with open('view_catalog.txt', 'w') as file:
