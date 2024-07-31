@@ -1,8 +1,9 @@
 +---+-------------------------+----------------------------------------------+
 |   |       Recipe Name       |                 Description                  |
 +---+-------------------------+----------------------------------------------+
-| 1 |    Crunchy Chickpeas    | Crunchy, savory, and easy to eat as a snack. |
-| 2 |      Sugar Cookies      |    Sweet, buttery, and delicious cookie!     |
-| 3 | Peanut Butter and Jelly |         A simple, childhood classic.         |
-| 4 |      Artisan Bread      |        Crusty, chewy, no-knead bread.        |
+| 1 |       Cacio e Pepe      |    Classic Italian pasta dish from Rome.     |
+| 2 |    Crunchy Chickpeas    | Crunchy, savory, and easy to eat as a snack. |
+| 3 |      Sugar Cookies      |    Sweet, buttery, and delicious cookie!     |
+| 4 | Peanut Butter and Jelly |         A simple, childhood classic.         |
+| 5 |      Artisan Bread      |        Crusty, chewy, no-knead bread.        |
 +---+-------------------------+----------------------------------------------+

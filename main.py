@@ -5,39 +5,63 @@ from colorama import Fore
 from prettytable import PrettyTable
 
 # ---- PROMPTS ----
-def welcome_prompt():
-    print(pyfiglet.figlet_format("B i t e  B o o k", font="script").rstrip())
+def app_logo():
+    print(pyfiglet.figlet_format("  B i t e  B o o k", font="script").rstrip())
     print("Your own personal recipe catalog at the tips of your fingers!")
 
+def home_header():
+    print("--------------------------------------------------------------")
+    print("                           Home")
+    print("--------------------------------------------------------------")
+    print("You can easily view, search, or add to your catalog here.")
+    print("To access additional features, proceed to your catalog!\n")
+
 def catalog_header():
-    print("\n-------------------------------------------------------")
-    print("                    Recipe Catalog")
-    print("-------------------------------------------------------")
-    print("To view, search for, add, or delete a recipe in your")
-    print("catalog, enter a selection and a short prompt will ask")
-    print("you for additional details.\n")
+    print("--------------------------------------------------------------")
+    print("                      Recipe Catalog")
+    print("--------------------------------------------------------------")
+    print("To view, search for, add, or delete a recipe in your catalog,")
+    print("make a selection and you will be redirected to a short form.\n")
 
 def view_recipe_header():
-    print("\n-------------------------------------------------------")
+    print("\n--------------------------------------------------------------")
     print("                    View Recipe")
-    print("-------------------------------------------------------")
+    print("--------------------------------------------------------------")
     print("Enter in the index of the recipe you wish to view.")
     print("The recipe will be displayed and you can then choose")
-    print("where you wish go next.")
+    print("where you wish go next.\n")
+
+def search_header():
+    print("\n--------------------------------------------------------------")
+    print("                   Search Recipe")
+    print("--------------------------------------------------------------")
+    print("To search for a recipe, enter in the recipes' name.")
+    print("If the recipe exists, the recipe will be displayed.")
+    print("If it does not, you can choose where you would like to\nproceed next.\n")
+
+
+def add_header():
+    print("\n--------------------------------------------------------------")
+    print("                       Add a Recipe")
+    print("--------------------------------------------------------------")
+    print("To add a recipe, please fill out the following form.")
+    print("To separate ingredients, utilize a comma.")
+    print("To separate instructions, utilize a period.")
+    print(Fore.RED + "After completing the form, you can choose to submit the recipe, \nredo the recipe, or go back to the catalog.\n" + Fore.RESET)
 
 def delete_header():
-    print("\n-------------------------------------------------------")
-    print("                   Delete Recipe")
-    print("-------------------------------------------------------")
+    print("\n--------------------------------------------------------------")
+    print("                       Delete Recipe")
+    print("--------------------------------------------------------------")
     print("To delete a recipe, please enter the index of the recipe.")
     print("After the action is completed, the updated catalog will be displayed.\n")
 
 
 def load_prompt(sec):
-    print(Fore.BLUE + "\n Loading - Please wait!")
+    print(Fore.GREEN + "\n                    Loading - Please wait!")
     for x in range(sec):
         time.sleep(1)
-        print("          .")
+        print("                              .")
     print(Fore.RESET)
 
 # ---- ACTIONS ----
@@ -52,19 +76,21 @@ def view_catalog():
     # Send request by writing "Run" to file
     with open('view_catalog.txt', 'w') as file:
         file.write("Run")
-    load_prompt(3)
+
+    # Allow microservice to work
+    load_prompt(4)  # [WARNING... BE CAREFUL WHEN CHANGING!] - Originally just 3
 
     catalog_header()
-    time.sleep(1)
 
     # Receive response
     with open('view_catalog.txt', 'r') as file:
-        display_recipe = file.read()
-    print(display_recipe)
+        display_catalog = file.read()
+        while display_catalog == "Run":
+            display_catalog = file.read()
+    print(display_catalog +"\n")
 
     # Catalog has own set of options
     catalog_options()
-
 
 def view_recipe(selected_index):
     # Send request by writing index to file
@@ -79,13 +105,7 @@ def view_recipe(selected_index):
     print(display_recipe)
 
 def add_recipe():
-    print("\n-------------------------------------------------------")
-    print("                   Add a Recipe")
-    print("-------------------------------------------------------")
-    print("To add a recipe, please fill out the following form.")
-    print("To separate ingredients, utilize a comma.")
-    print("To separate instructions, utilize a period.")
-    print(Fore.RED + "After completing the form, you can choose to either\nsubmit the recipe, redo the recipe, or leave.\n" + Fore.RESET)
+    add_header()
 
     # Input new recipe
     add_name = input("-- Enter recipe name: ")
@@ -97,37 +117,33 @@ def add_recipe():
                 "ingredients": add_ingredients,
                 "instructions": add_instructions}
 
-    print("\n[ Do you wish to submit the recipe to the catalog? ]")
+    print("\n[ Do you wish to submit this recipe to the catalog? ]")
     print(f'YES: Submit recipe')
-    print(f'REDO: Redo recipe')
-    print(f'BACK: No, go bck to catalog\n')
+    print(f'NO: Cancel and go back to catalog')
+    print(f'REDO: Redo recipe\n')
 
-    user_input = input("-- Enter your selection here: ").lower()
-    if user_input == "yes":
+    user_input = input("-- Enter your selection here: ").upper()
+    if user_input == "YES":
         # Send request by writing new recipe to file
         with open('add.txt', 'w') as file:
             json.dump(new_item, file)
-        print("\nPlease wait until the recipe has been added into the catalog...")
-        time.sleep(2)
-    elif user_input == "redo":
-        add_recipe()
-    elif user_input == "back":
+        print("\nSubmitting recipe...")
+        time.sleep(1)
+        print("Success! Redirecting back to catalog.")
+        time.sleep(1)
+        # time.sleep(2)
+    elif user_input == "NO":
         print("\nOk... Redirecting back to catalog.")
         time.sleep(1)
+    elif user_input == "REDO":
+        add_recipe()
     view_catalog()
 
 
 
 
 def search_recipe():    # IN PROGRESS --------
-    print("\n-------------------------------------------------------")
-    print("                   Search Recipe")
-    print("-------------------------------------------------------")
-    print("To search for a recipe, Enter in its' name.")
-    print("If the recipe exists, the recipe will be displayed.")
-    print("If it does not, you will be directed back to the catalog.\n")
-
-
+    search_header()
     user_input = str(input("-- Enter recipe name: ")).lower()
     with open('catalog.txt', 'r') as file:
         all_recipes = json.load(file)
@@ -165,14 +181,22 @@ def delete_recipe():    # IN PROGRESS --------
             else:
                 deleted_recipe = all_recipes[idx]["recipe_name"]
                 continue
-    time.sleep(1)
+
     print(f'\nAre you sure you wish to delete the "{deleted_recipe}" recipe?')
     print(Fore.RED + "Please note that this action is permanent and cannot be undone.\n" + Fore.RESET)
-    time.sleep(1)
-    confirm = input("-- Enter 'YES' or enter 'NO': ").lower()
+
+    print("[ Delete Options: ]")
+    print("YES: Delete recipe")
+    print("NO: Do NOT delete recipe\n")
+
+    confirm = input("-- Enter your selection here: ").lower()
     if confirm == "yes":
         with open('catalog.txt', 'w+') as file:
             json.dump(new_catalog, file, indent=4)
+
+        print("\nRecipe deleted...")
+        time.sleep(1)
+        print("Redirecting back to catalog.")
     else:
         print("\nOk... Returning to catalog.")
         time.sleep(1)
@@ -181,32 +205,30 @@ def delete_recipe():    # IN PROGRESS --------
 
 # ---- OPTION PROMPTS ----
 def main_options():
-    print("\n-------------------------------------------------------")
-    print("                        Home")
-    print("-------------------------------------------------------")
-    print("You can easily search or add to your catalog here.")
-    print("To access additional features, view your catalog!")
-
-    print("\n[ Home Options: ]")
+    home_header()
+    print("[ Home Options: ]")
     print("1: View catalog")
     print("2: Search for a recipe")
     print("3: Add recipe")
     print("QUIT: Exit app\n")
 
     user_input = input("-- Enter your selection here: ")
-    if user_input == "1":       # view catalog
-        view_catalog()
-    elif user_input == "2":     # search
-        search_recipe()
-    elif user_input == "3":     # add
-        add_recipe()
-    elif user_input == "QUIT":  # exit
-        exit_app()
-    else:
-        print("Invalid Input. Please make a valid choice.")
+
+    while user_input != "QUIT" and user_input != "quit":
+        if user_input == "1":       # view catalog
+            view_catalog()
+        elif user_input == "2":     # search
+            search_recipe()
+        elif user_input == "3":     # add
+            add_recipe()
+        else:
+            user_input = input("-- Invalid input - enter your selection here: ")
+
+    exit_app()
+
 
 def catalog_options():
-    print("\n[ Catalog Options: ]")
+    print("[ Catalog Options: ]")
     print("1: View a recipe")
     print("2: Search for a recipe")
     print("3: Add recipe")
@@ -246,7 +268,7 @@ def catalog_options():
         catalog_options()
 
 def back_option():
-    print("Where would you like to go next?")
+    print("[ Where would you like to go next? ]")
     print("BACK: Back to catalog")
     print("QUIT: Exit app\n")
     user_input = input("-- Enter your selection here: ").lower()
@@ -257,9 +279,7 @@ def back_option():
     elif user_input == "quit":
         exit_app()
 
-
-
 if __name__ == "__main__":
-    welcome_prompt()
+    app_logo()
     while True:
         main_options()

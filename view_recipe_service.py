@@ -9,7 +9,7 @@ while True:
     if selected_index.isdigit():
         selected_index = int(selected_index)
         print(f"Received index {selected_index}...")
-        time.sleep(1)
+        #time.sleep(1)
         print("Finding recipe...")
         time.sleep(1)
         with open('catalog.txt', 'r') as file:
@@ -42,4 +42,5 @@ while True:
             #json.dump(recipe_table.get_json_string())
 
             #file.write(recipe_table.get_json_string())
+
 
