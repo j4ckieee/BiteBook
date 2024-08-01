@@ -1,8 +1,7 @@
 import time
-import json
 import pyfiglet
 from colorama import Fore
-from prettytable import PrettyTable
+import zmq
 
 # ---- PROMPTS ----
 def app_logo():
@@ -70,41 +69,42 @@ def exit_app():
     print("\n-------------------------------------------------------")
     print("                     Ok, goodbye!")
     print("-------------------------------------------------------\n")
+    context.term()
     exit()
 
 def view_catalog():
-    # Send request by writing "Run" to file
-    with open('view_catalog.txt', 'w') as file:
-        file.write("Run")
+    # Connecting to view catalog server
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4680")
 
-    # Allow microservice to work
-    load_prompt(4)  # [WARNING... BE CAREFUL WHEN CHANGING!] - Originally just 3
+    # Send "Run
+    socket.send_string("Run")
 
-    catalog_header()
+    load_prompt(3)
 
-    # Receive response
-    with open('view_catalog.txt', 'r') as file:
-        display_catalog = file.read()
-        while display_catalog == "Run":
-            display_catalog = file.read()
-    print(display_catalog +"\n")
+    #  Get the reply
+    message = socket.recv()
+    print(message.decode()+ "\n")
 
     # Catalog has own set of options
     catalog_options()
 
 def view_recipe(selected_index):
-    # Send request by writing index to file
-    with open('view_recipe.txt', 'w') as file:
-        file.write(selected_index)
+    # Connecting to view catalog server
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4682")
 
-    # Receive response
-    load_prompt(4)
-    with open('view_recipe.txt', 'r') as file:
-        display_recipe = file.read()
+    socket.send_json(selected_index)
+    load_prompt(3)
 
-    print(display_recipe)
+    #  Get the reply
+    message = socket.recv()
+    print(message.decode())
 
 def add_recipe():
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4684")
+
     add_header()
 
     # Input new recipe
@@ -124,82 +124,67 @@ def add_recipe():
 
     user_input = input("-- Enter your selection here: ").upper()
     if user_input == "YES":
-        # Send request by writing new recipe to file
-        with open('add.txt', 'w') as file:
-            json.dump(new_item, file)
-        print("\nSubmitting recipe...")
-        time.sleep(1)
-        print("Success! Redirecting back to catalog.")
-        time.sleep(1)
-        # time.sleep(2)
+        # Connecting to view catalog server
+        new_item = new_item
+
+        # Send "Run
+        socket.send_json(new_item)
+
+        #  Get the reply
+        message = socket.recv()
+        print(message.decode())
     elif user_input == "NO":
         print("\nOk... Redirecting back to catalog.")
         time.sleep(1)
     elif user_input == "REDO":
         add_recipe()
+
     view_catalog()
 
 
 
+def search_recipe():
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4686")
 
-def search_recipe():    # IN PROGRESS --------
     search_header()
+
     user_input = str(input("-- Enter recipe name: ")).lower()
-    with open('catalog.txt', 'r') as file:
-        all_recipes = json.load(file)
-        for idx, recipe in enumerate(all_recipes, 1):
-            curr_recipe = all_recipes[idx-1]["recipe_name"]
-            curr_recipe = str(curr_recipe).lower()
 
-            # Recipe found
-            if curr_recipe == user_input:
-                matching_index = str(idx)
-                view_recipe(matching_index)
-                return
-
-        # Recipe NOT found
-        load_prompt(1)
-        print("Sorry - no matching recipe was found.")
-        time.sleep(1)
+    socket.send_string(user_input)
+    message = socket.recv_string()
+    print(message)
+    back_option()
 
 
 def delete_recipe():    # IN PROGRESS --------
     delete_header()
 
-    user_input = int(input("-- Enter index of the recipe you want to delete: ")) - 1
-    new_catalog=[]
-    with open('catalog.txt', 'r') as file:
-        all_recipes = json.load(file)
-        for idx, recipe in enumerate(all_recipes, 0):
-            curr_recipe = all_recipes[idx]["recipe_name"]
-            curr_recipe = str(curr_recipe).lower()
+    # Connecting to view catalog server
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4688")
+    num_sel = input("-- Enter the index of the recipe you want to delete: ")
 
-            # Populate new catalog
-            if idx != user_input:
-                curr_recipe = all_recipes[idx]
-                new_catalog.append(curr_recipe)
-            else:
-                deleted_recipe = all_recipes[idx]["recipe_name"]
-                continue
-
-    print(f'\nAre you sure you wish to delete the "{deleted_recipe}" recipe?')
+    print(f'\nAre you sure you want to delete this recipe?')
     print(Fore.RED + "Please note that this action is permanent and cannot be undone.\n" + Fore.RESET)
 
     print("[ Delete Options: ]")
     print("YES: Delete recipe")
     print("NO: Do NOT delete recipe\n")
 
-    confirm = input("-- Enter your selection here: ").lower()
-    if confirm == "yes":
-        with open('catalog.txt', 'w+') as file:
-            json.dump(new_catalog, file, indent=4)
+    confirm = input("-- Enter your selection here: ").upper()
+    if confirm == "YES":
+        socket.send_string(num_sel)
 
-        print("\nRecipe deleted...")
-        time.sleep(1)
-        print("Redirecting back to catalog.")
+        #  Get the reply
+        delete_selection = socket.recv_string()
+        print("\n" + delete_selection)
+    elif confirm == "NO":
+        print("\nRecipe not deleted.")
     else:
-        print("\nOk... Returning to catalog.")
-        time.sleep(1)
+        print("Invalid input.\n")
+    time.sleep(1)
+    print("Redirecting back to catalog.")
     view_catalog()
 
 
@@ -240,7 +225,7 @@ def catalog_options():
 
     if user_input == "1":
         view_recipe_header()
-        selected_index = input("\n-- Enter the index of the recipe you want to view: ")
+        selected_index = input("-- Enter the index of the recipe you want to view: ")
         view_recipe(selected_index)
         back_option()
 
@@ -272,7 +257,6 @@ def back_option():
     print("BACK: Back to catalog")
     print("QUIT: Exit app\n")
     user_input = input("-- Enter your selection here: ").lower()
-
     if user_input == "back":
         view_catalog()
 
@@ -280,6 +264,7 @@ def back_option():
         exit_app()
 
 if __name__ == "__main__":
+    context = zmq.Context()
     app_logo()
     while True:
         main_options()

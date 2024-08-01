@@ -1,46 +1,47 @@
+import zmq
 import time
 import json
 from prettytable import PrettyTable
+import os
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:4682")
 
 while True:
-    with open('view_recipe.txt', 'r') as idx_file:
-        selected_index = idx_file.read()
+    #  Wait for next request from client
+    print("Waiting for request...")
+    selected_index = socket.recv_json()
+    selected_index = int(selected_index)
 
-    if selected_index.isdigit():
-        selected_index = int(selected_index)
-        print(f"Received index {selected_index}...")
-        #time.sleep(1)
-        print("Finding recipe...")
-        time.sleep(1)
-        with open('catalog.txt', 'r') as file:
-            recipe = json.load(file)
-            if selected_index != 0 and selected_index <= len(recipe):
-                name = recipe[selected_index - 1]["recipe_name"]
-                description = recipe[selected_index - 1]["description"]
-                ingredients = (recipe[selected_index - 1]["ingredients"])
-                instructions = (recipe[selected_index - 1]["instructions"])
+    print(f"Received index {selected_index}...")
 
-                # special formatting
-                ingredients = ingredients.replace(',', '\n -')
-                instructions = instructions.replace('.', '.\n')
+    print("Finding recipe...")
+    time.sleep(1)
+    with open('catalog.txt', 'r') as file:
+        recipe = json.load(file)
+        if selected_index != 0 and selected_index <= len(recipe):
+            name = recipe[selected_index - 1]["recipe_name"]
+            description = recipe[selected_index - 1]["description"]
+            ingredients = (recipe[selected_index - 1]["ingredients"])
+            instructions = (recipe[selected_index - 1]["instructions"])
 
-                # display recipe
-                recipe_table = PrettyTable(align="l")
-                recipe_table.field_names = [name]
-                # recipe_table.add_row([f'Recipe Name:\n{name}\n'])
-                recipe_table.add_row([f'Description:\n{description}\n'])
-                recipe_table.add_row([f'Ingredients:\n - {ingredients}\n'])
-                recipe_table.add_row([f'Instructions:\n {instructions}'])
-                recipe_table = recipe_table
-                #print(recipe_table, "\n")
+            # special formatting
+            ingredients = ingredients.replace(',', '\n -')
+            instructions = instructions.replace('.', '.\n')
 
-            print(f'Submitting {name} recipe...')
-            time.sleep(1)
+            # display recipe
+            recipe_table = PrettyTable(align="l")
+            recipe_table.field_names = [name]
 
-        with open('view_recipe.txt', 'w+') as file:
-            file.write(recipe_table.get_string())
-            #json.dump(recipe_table.get_json_string())
-
-            #file.write(recipe_table.get_json_string())
+            recipe_table.add_row([f'Description:\n{description}\n'])
+            recipe_table.add_row([f'Ingredients:\n - {ingredients}\n'])
+            recipe_table.add_row([f'Instructions:\n {instructions}'])
+            recipe_table = recipe_table.get_string()
 
 
+    # Add new recipe to catalog
+    print("Responding with recipe...")
+    time.sleep(1)
+
+    socket.send_string(recipe_table)

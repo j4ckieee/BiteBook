@@ -1,26 +1,30 @@
+import zmq
 import time
 import json
 from prettytable import PrettyTable
 
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:4680")
+
 while True:
-    with open('view_catalog.txt', 'r') as idx_file:
-        txt = idx_file.read()
+    #  Wait for next request from client
+    print("Waiting for request...")
+    message = socket.recv()
 
-    if txt == "Run":
-        print("'Run' received...")
-        with open('catalog.txt', 'r') as file:
-            catalog_table = PrettyTable()
-            catalog_table.field_names = ["", "Recipe Name", "Description"]
-            recipe_data = json.load(file)
-            for count, recipe in enumerate(recipe_data, start=1):
-                catalog_table.add_row([count, recipe["recipe_name"], recipe["description"]])
-            print("Catalog accessed...")
+    print("Receiving catalog...")
+    time.sleep(1)
+    with open('catalog.txt', 'r') as file:
+        recipe_data = json.load(file)
+        catalog_table = PrettyTable()
+        catalog_table.field_names = ["", "Recipe Name", "Description"]
+        for count, recipe in enumerate(recipe_data, start=1):
+            catalog_table.add_row([count, recipe["recipe_name"], recipe["description"]])
+        print("Catalog accessed...")
         time.sleep(1)
-        with open('view_catalog.txt', 'w') as file:
-            file.write(catalog_table.get_string())
-            print("Catalog submitted...")
+        result = catalog_table.get_formatted_string()
 
-        # except:
-        #     print("Catalog NOT accessed...")
-        #     with open('view_catalog.txt', 'w') as file:
-        #         file.write("\nWait - there is nothing in your catalog!\nPlease add a recipe before proceeding.")
+    print("Sending catalog...\n")
+    time.sleep(1)
+
+    socket.send_string(result)
