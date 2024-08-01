@@ -157,7 +157,7 @@ def search_recipe():
     back_option()
 
 
-def delete_recipe():    # IN PROGRESS --------
+def delete_recipe():
     delete_header()
 
     # Connecting to view catalog server
@@ -199,7 +199,10 @@ def main_options():
 
     user_input = input("-- Enter your selection here: ")
 
-    while user_input != "QUIT" and user_input != "quit":
+    if user_input.isalpha():
+        user_input = user_input.upper()
+
+    while user_input != "QUIT":
         if user_input == "1":       # view catalog
             view_catalog()
         elif user_input == "2":     # search
@@ -208,7 +211,6 @@ def main_options():
             add_recipe()
         else:
             user_input = input("-- Invalid input - enter your selection here: ")
-
     exit_app()
 
 
@@ -222,6 +224,9 @@ def catalog_options():
     print("QUIT: Exit app\n")
 
     user_input = input("-- Enter your selection here: ")
+
+    if user_input.isalpha():
+        user_input = user_input.upper()
 
     if user_input == "1":
         view_recipe_header()
