@@ -7,15 +7,16 @@ context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:4686")
 
-
 while True:
-    #  Wait for next request from client
+    #  Wait for request from client
     print("Waiting for request...")
     req_recipe = socket.recv_string()
 
+    #  Received request
     print(f"Received request for {req_recipe}")
     time.sleep(1)
 
+    # Open catalog and search for recipe
     with open('catalog.txt', 'r+') as file:
         all_recipes = json.load(file)
         result = "Sorry - Recipe not found."
@@ -23,7 +24,7 @@ while True:
             curr_recipe = all_recipes[idx]["recipe_name"]
             curr_recipe = str(curr_recipe).lower()
 
-            # Recipe found
+            # Recipe found - format into table
             if curr_recipe == req_recipe:
                 print("Recipe Found!")
                 found_recipe = all_recipes[idx]
@@ -45,8 +46,10 @@ while True:
                 recipe_table.add_row([f'Ingredients:\n - {ingredients}\n'])
                 recipe_table.add_row([f'Instructions:\n {instructions}'])
                 result = recipe_table.get_string()
+                print(result)
                 break
 
+    # Send back response
     socket.send_string(result)
 
 
