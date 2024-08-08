@@ -4,7 +4,7 @@ import json
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:4688")
+socket.bind("tcp://*:4694")
 
 while True:
     #  Wait for request from client

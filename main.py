@@ -3,118 +3,42 @@ import pyfiglet
 from colorama import Fore
 import zmq
 
-# ---- PROMPTS ----
+# ------ PAGES ------
 def app_logo():
     print(pyfiglet.figlet_format("  B i t e  B o o k", font="script").rstrip())
     print("Your own personal recipe catalog at the tips of your fingers!")
 
-def home_header():
-    print("--------------------------------------------------------------")
-    print("                           Home")
-    print("--------------------------------------------------------------")
-    print("You can easily view, search, or add to your catalog here.")
-    print("To access additional features, proceed to your catalog!\n")
+def home_page():
+    instructions = ("You can easily view, search, or add to your catalog here.\n"
+                    "To access additional features, proceed to your catalog!\n")
+    display_header("Home", 32, instructions)
 
-def catalog_header():
-    print("--------------------------------------------------------------")
-    print("                      Recipe Catalog")
-    print("--------------------------------------------------------------")
-    print("To view, search for, add, or delete a recipe in your catalog,")
-    print("make a selection and you will be redirected to a short form.\n")
+    home_options()
 
-def view_recipe_header():
-    print("\n--------------------------------------------------------------")
-    print("                    View Recipe")
-    print("--------------------------------------------------------------")
-    print("Enter in the index of the recipe you wish to view.")
-    print("The recipe will be displayed and you can then choose")
-    print("where you wish go next.\n")
+def catalog_page():
+    instructions = ("You can easily view, search, or add to your catalog here.\n"
+                    "To access additional features, proceed to your catalog!\n")
+    display_header("Recipe Catalog", 38, instructions)
 
-def search_header():
-    print("\n--------------------------------------------------------------")
-    print("                   Search Recipe")
-    print("--------------------------------------------------------------")
-    print("To search for a recipe, enter in the recipes' name.")
-    print("If the recipe exists, the recipe will be displayed.")
-    print("If it does not, you can choose where you would like to\nproceed next.\n")
-
-def add_header():
-    print("\n--------------------------------------------------------------")
-    print("                       Add a Recipe")
-    print("--------------------------------------------------------------")
-    print("To add a recipe, please fill out the following form.")
-    print("To separate ingredients, utilize a comma.")
-    print("To separate instructions, utilize a period.")
-    print(Fore.RED + "After completing the form, you can choose to submit the recipe, \nredo the recipe, or go back to the catalog.\n" + Fore.RESET)
-
-def delete_header():
-    print("\n--------------------------------------------------------------")
-    print("                       Delete Recipe")
-    print("--------------------------------------------------------------")
-    print("To delete a recipe, please enter the index of the recipe.")
-    print("After the action is completed, the updated catalog will be displayed.\n")
-
-def convert_header():
-    print("\n--------------------------------------------------------------")
-    print("                      Convert Unit Tool")
-    print("--------------------------------------------------------------")
-    print("Enter in the amount and unit of what you want to convert from,")
-    print("and what unit you want to convert to.\n")
-    print(Fore.RED +"This tool only works for the following units:")
-    print("oz, lb, tsp, tbsp, fl oz, cup, pt, qt, gal\n"+ Fore.RESET)
-
-
-def load_prompt(sec):
-    print(Fore.GREEN + "\n                    Loading - Please wait!")
-    for x in range(sec):
-        time.sleep(1)
-        print("                              .")
-    print(Fore.RESET)
-
-# ---- ACTIONS ----
-
-def exit_app():
-    print("\n--------------------------------------------------------------")
-    print("                         Ok, goodbye!")
-    print("--------------------------------------------------------------\n")
-    context.term()
-    exit()
-
-def view_catalog():
-    # Connecting to view catalog server
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:4680")
-
-    # Send request
-    socket.send_string("Run")
-
-    # Let server do work
-    load_prompt(2)
-
-    # Receive and print response
-    message = socket.recv()
-    print(message.decode()+ "\n")
-
-    # Catalog has own set of options
+    view_catalog()
     catalog_options()
 
-def view_recipe(selected_index):
-    # Connecting to view recipe server
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:4682")
+def recipe_page():
+    instructions = ("Enter in the index of the recipe you wish to view. The recipe\n"
+                    "will be displayed and you can then choose where you wish go next.\n")
+    display_header("View Recipe", 30, instructions)
 
-    # Send request
-    socket.send_json(selected_index)
+    selected_index = input("-- Enter the index of the recipe you want to view: ")
+    view_recipe(selected_index)
+    back_option()
 
-    # Let server do work
-    load_prompt(2)
-
-    # Receive and print response
-    message = socket.recv()
-    print(message.decode())
-
-def add_recipe():
-    add_header()
+def add_page():
+    instructions = ("To add a recipe, please fill out the following form.\n"
+                    "To separate ingredients, utilize a comma.\n"
+                    "To separate instructions, utilize a period.\n")
+    display_header("Add a Recipe", 37, instructions)
+    print(Fore.RED + "After completing the form, you can choose to submit the recipe, \n"
+                     "redo the recipe, or go back to the catalog.\n" + Fore.RESET)
 
     # Get user input for new recipe
     add_name = input("-- Enter recipe name: ")
@@ -134,80 +58,60 @@ def add_recipe():
 
     user_input = input("-- Enter your selection here: ").upper()
     if user_input == "YES":
-        # Connecting to view recipe server
-        socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:4684")
-
-        # Send request
-        socket.send_json(new_item)
-
-        # Receive and print response
-        message = socket.recv()
-        print(message.decode())
+        add_recipe(new_item)
     elif user_input == "NO":
         print("\nOk... Redirecting back to catalog.")
         time.sleep(1)
     elif user_input == "REDO":
-        add_recipe()
+        add_page()
 
-    view_catalog()
+    catalog_page()
 
-def search_recipe():
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:4686")
+def search_page():
+    instructions = ("To search for a recipe, enter in the recipes' name.\n"
+                    "If the recipe exists, the recipe will be displayed.\n"
+                    "If it does not, you can choose where you would like to\nproceed next.\n")
+    display_header("Search Recipe", 37, instructions)
 
-    search_header()
-
-    user_input = str(input("-- Enter recipe name: ")).lower()
-
-    socket.send_string(user_input)
-    message = socket.recv_string()
-    print(message)
+    find_recipe = str(input("-- Enter recipe name: ")).lower()
+    search_recipe(find_recipe)
     back_option()
 
+def delete_page():
+    instructions = ("To delete a recipe, please enter the index of the recipe. After\n"
+                    "the action is completed, the updated catalog will be displayed.\n")
+    display_header("Delete Recipe", 37, instructions)
 
-def delete_recipe():
-    delete_header()
-    num_sel = input("-- Enter the index of the recipe you want to delete: ")
+    delete_index = input("-- Enter the index of the recipe you want to delete: ")
 
     print(f'\nAre you sure you want to delete this recipe?')
     print(Fore.RED + "Please note that this action is permanent and cannot be undone.\n" + Fore.RESET)
 
-    print("[ Delete Options: ]")
-    print("YES: Delete recipe")
-    print("NO: Do NOT delete recipe\n")
+    print("[ Delete Options: ]\n"
+          "YES: Delete recipe\n"
+          "NO: Do NOT delete recipe\n")
 
     confirm = input("-- Enter your selection here: ").upper()
     if confirm == "YES":
-        # Connecting to view catalog server
-        socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:4688")
-
-        # Send request
-        socket.send_string(num_sel)
-
-        # Receive and print response
-        delete_selection = socket.recv_string()
-        print("\n" + delete_selection)
-
+        delete_recipe(delete_index)
     elif confirm == "NO":
         print("\nRecipe not deleted.")
-
     else:
         print("Invalid input.\n")
 
     time.sleep(1)
     print("Redirecting back to catalog.")
-    view_catalog()
+    time.sleep(1)
+    catalog_page()
 
-def convert_unit():
-    convert_header()
+def convert_page():
+    instructions = ("Enter in the amount and unit of what you want to convert from,\n"
+                    "and what unit you want to convert to.\n")
+    display_header("Unit Conversion Tool", 40, instructions)
 
-    # Connecting to view catalog server
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:4692")
+    print(Fore.RED + "This tool only works for the following units:\n"
+                     "oz, lb, tsp, tbsp, fl oz, cup, pt, qt, gal\n" + Fore.RESET)
 
-    # Get user input
     print("[ Input what you're converting \033[1mFROM...\033[0m ]")
     amount_input = input("-- Enter numeric amount: ")
     unit_from_input = input("-- Enter unit: ")
@@ -215,36 +119,28 @@ def convert_unit():
     print("\n[ Input what you're converting \033[1mTO...\033[0m ]")
     unit_to_input = input("-- Enter unit: ")
 
-    # Format input into dictionary
     unit_from_input = unit_from_input.lower()
-    unit_to_input = unit_to_input. lower()
-    convert_info = {"amount": amount_input,
+    unit_to_input = unit_to_input.lower()
+    convert_data = {"amount": amount_input,
                     "unit_from": unit_from_input,
                     "unit_to": unit_to_input}
 
-    # Send request - contains dictionary
-    socket.send_json(convert_info)
-
-    # Lets server do work
-    time.sleep(1)
-
-    # Receive response as string
-    convert_result = socket.recv_string()
-    print(f'\n\033[1mResult:\033[0m {convert_result}\n' )
-
-    # Next options
+    convert_unit(convert_data)
     back_option()
 
+def exit_page():
+    display_header("G o o d b y e !", 40, "")
+    context.term()
+    exit()
 
-# ---- OPTION PROMPTS ----
-def main_options():
-    home_header()
-    print("[ Home Options: ]")
-    print("1: View catalog")
-    print("2: Search for a recipe")
-    print("3: Add recipe")
-    print("CONVERT: Unit conversion tool")
-    print("QUIT: Exit app\n")
+# ------ OPTIONS ------
+def home_options():
+    print("[ Home Options: ]\n"
+          "1: View catalog\n"
+          "2: Search for a recipe\n"
+          "3: Add recipe\n"
+          "CONVERT: Unit conversion tool\n"
+          "QUIT: Exit app\n")
 
     user_input = input("-- Enter your selection here: ")
 
@@ -252,28 +148,27 @@ def main_options():
         user_input = user_input.upper()
 
     while user_input != "QUIT":
-        if user_input == "1":       # view catalog
-            view_catalog()
-        elif user_input == "2":     # search
-            search_recipe()
-        elif user_input == "3":     # add
-            add_recipe()
+        if user_input == "1":
+            catalog_page()
+        elif user_input == "2":
+            search_page()
+        elif user_input == "3":
+            add_page()
         elif user_input == "CONVERT":
-            convert_unit()
+            convert_page()
         else:
             user_input = input("-- Invalid input - enter your selection here: ")
-    exit_app()
-
+    exit_page()
 
 def catalog_options():
-    print("[ Catalog Options: ]")
-    print("1: View a recipe")
-    print("2: Search for a recipe")
-    print("3: Add recipe")
-    print("4: Delete recipe")
-    print("CONVERT: Unit conversion tool")
-    print("BACK: Back to homepage")
-    print("QUIT: Exit app\n")
+    print("[ Catalog Options: ]\n"
+          "1: View a recipe\n"
+          "2: Search for a recipe\n"
+          "3: Add recipe\n"
+          "4: Delete recipe\n"
+          "CONVERT: Unit conversion tool\n"
+          "BACK: Back to homepage\n"
+          "QUIT: Exit app\n")
 
     user_input = input("-- Enter your selection here: ")
 
@@ -281,29 +176,25 @@ def catalog_options():
         user_input = user_input.upper()
 
     if user_input == "1":
-        view_recipe_header()
-        selected_index = input("-- Enter the index of the recipe you want to view: ")
-        view_recipe(selected_index)
-        back_option()
+        recipe_page()
 
     elif user_input == "2":
-        search_recipe()
-        back_option()
+        search_page()
 
     elif user_input == "3":
-        add_recipe()
+        add_page()
 
     elif user_input == "4":
-        delete_recipe()
+        delete_page()
 
     elif user_input == "CONVERT":
-        convert_unit()
+        convert_page()
 
     elif user_input == "BACK":
-        main_options()
+        home_page()
 
     elif user_input == "QUIT":
-        exit_app()
+        exit_page()
 
     else:
         print("\nInvalid selection...")
@@ -313,21 +204,101 @@ def catalog_options():
         catalog_options()
 
 def back_option():
-    print("[ Where would you like to go next? ]")
-    print("CONVERT: Unit Conversion Tool")
-    print("BACK: Back to catalog")
-    print("QUIT: Exit app\n")
-    user_input = input("-- Enter your selection here: ").lower()
+    print("[ Where would you like to go next? ]\n"
+          "CONVERT: Unit Conversion Tool\n"
+          "BACK: Back to catalog\n"
+          "QUIT: Exit app\n")
 
-    if user_input == "convert":
-        convert_unit()
-    elif user_input == "back":
-        view_catalog()
-    elif user_input == "quit":
-        exit_app()
+    user_input = input("-- Enter your selection here: ").upper()
+
+    if user_input == "CONVERT":
+        convert_page()
+
+    elif user_input == "BACK":
+        catalog_page()
+
+    elif user_input == "QUIT":
+        exit_page()
+
+
+# ------ MISC PROMPTS ------
+def display_header(page_name, spacing, instructions):
+    divider = "--------------------------------------------------------------"
+    padded_text = page_name.rjust(spacing)
+    print(divider)
+    print(padded_text)
+    print(divider)
+    print(instructions)
+
+# def load_prompt(sec):
+#     print(Fore.GREEN + "\n                    Loading - Please wait!")
+#     for x in range(sec):
+#         time.sleep(1)
+#         print("                              .")
+#     print(Fore.RESET)
+
+# ------ MICROSERVICES ------
+def view_catalog():
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4680")
+
+    socket.send_string("Run")
+
+    message = socket.recv()
+    print(message.decode()+ "\n")
+
+def view_recipe(selected_index):
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4682")
+
+    socket.send_json(selected_index)
+
+    # # Let server do work
+    # load_prompt(2)
+
+    message = socket.recv()
+    print(message.decode())
+
+def add_recipe(new_item):
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:8648")
+
+    socket.send_json(new_item)
+
+    message = socket.recv()
+    print(message.decode())
+
+def search_recipe(find_recipe):
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:7645")
+
+    socket.send_string(find_recipe)
+    message = socket.recv_string()
+    print(message)
+
+def delete_recipe(delete_index):
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4694")
+
+    socket.send_string(delete_index)
+
+    delete_selection = socket.recv_string()
+    print("\n" + delete_selection)
+
+
+def convert_unit(convert_data):
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:4600")
+
+    socket.send_json(convert_data)
+
+    time.sleep(1)
+
+    convert_result = socket.recv_string()
+    print(f'\n\033[1mResult:\033[0m {convert_result}\n' )
 
 if __name__ == "__main__":
     context = zmq.Context()
     app_logo()
     while True:
-        main_options()
+        home_page()

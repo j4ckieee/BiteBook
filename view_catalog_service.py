@@ -14,7 +14,7 @@ while True:
 
     # Received request
     print(f'Received request: {message.decode()}')
-    time.sleep(1)
+    #time.sleep(1)
 
     # Open catalog and add elements to table
     with open('catalog.txt', 'r') as file:
@@ -24,10 +24,10 @@ while True:
         for count, recipe in enumerate(recipe_data, start=1):
             catalog_table.add_row([count, recipe["recipe_name"], recipe["description"]])
         print("Catalog accessed...")
-        time.sleep(1)
+        #time.sleep(1)
         result = catalog_table.get_formatted_string()   # Resulting table to display
 
     # Send response
     print("Sending response...\n")
-    time.sleep(1)
+    #time.sleep(1)
     socket.send_string(result)

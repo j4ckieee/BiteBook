@@ -44,5 +44,5 @@ while True:
 
     # Send response
     print("Responding with recipe...")
-    time.sleep(1)
+    #time.sleep(1)
     socket.send_string(result)

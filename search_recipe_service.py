@@ -5,7 +5,7 @@ from prettytable import PrettyTable
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:4686")
+socket.bind("tcp://*:7645")
 
 while True:
     #  Wait for request from client

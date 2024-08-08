@@ -7,7 +7,7 @@ import time
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:4692")
+socket.bind("tcp://*:4600")
 
 def convert(req):
     amount = float(req.get("amount"))
